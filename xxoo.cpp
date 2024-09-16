@@ -1,6 +1,3 @@
-//
-// Created by 苏泽浩 on 2024-09-16.
-//
 bool isWin(char game[3][3]){
     bool win = false;
     if (game[0][0] == game[0][1] && game[0][1] == game[0][2] && (game[0][0]
