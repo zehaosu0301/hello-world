@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowDownRightIcon, ArrowUpRightIcon } from '@heroicons/react/24/outline';
+import { ComponentPropsWithoutRef, useMemo } from 'react';
 
 interface Props {
   label: string;
@@ -8,9 +8,36 @@ interface Props {
   trend?: number;
 }
 
+function TrendArrow({ direction, ...rest }: { direction: 'up' | 'down' } & ComponentPropsWithoutRef<'svg'>) {
+  const transform = direction === 'up' ? 'rotate(45)' : 'rotate(-45)';
+  const viewBox = '0 0 24 24';
+  return (
+    <svg
+      aria-hidden
+      focusable="false"
+      role="img"
+      viewBox={viewBox}
+      width={16}
+      height={16}
+      {...rest}
+      className={`h-4 w-4 ${rest.className ?? ''}`.trim()}
+    >
+      <path
+        d="M5 5h6v2H8.41l10.3 10.3-1.42 1.42L7 8.41V11H5z"
+        transform={transform}
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export default function PriceBadge({ label, value, trend }: Props) {
   const formattedValue = Number.isFinite(value) ? `$${value?.toFixed(2)}` : '--';
-  const trendValue = Number.isFinite(trend) ? `${(trend! * 100).toFixed(2)}%` : null;
+  const trendValue = useMemo(() => {
+    if (!Number.isFinite(trend)) return null;
+    return `${(trend! * 100).toFixed(2)}%`;
+  }, [trend]);
+
   const isPositive = (trend ?? 0) >= 0;
 
   return (
@@ -25,7 +52,7 @@ export default function PriceBadge({ label, value, trend }: Props) {
             isPositive ? 'bg-up/20 text-up' : 'bg-down/20 text-down'
           }`}
         >
-          {isPositive ? <ArrowUpRightIcon className="h-4 w-4" aria-hidden /> : <ArrowDownRightIcon className="h-4 w-4" aria-hidden />}
+          <TrendArrow direction={isPositive ? 'up' : 'down'} />
           {trendValue}
         </span>
       )}
